@@ -1,11 +1,13 @@
 package pl.springExercises.users.service;
 
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import pl.springExercises.users.dto.GroupDto;
 import pl.springExercises.users.dto.UserDto;
 import pl.springExercises.users.entity.GroupEntity;
 import pl.springExercises.users.entity.UserEntity;
+import pl.springExercises.users.exception.GroupDoesntExistException;
 import pl.springExercises.users.repository.GroupRepository;
 
 import java.util.ArrayList;
@@ -60,12 +62,18 @@ public class GroupService {
     }
 
     public void rmGroup(Long groupId) {
-        groupRepository.deleteById(groupId);
+        try {
+            groupRepository.deleteById(groupId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new GroupDoesntExistException();
+        }
     }
 
-    public Optional<GroupEntity> getGroupById(Long groupId){
-        return groupRepository.findById(groupId);
+    public GroupEntity getGroupById(Long groupId) {
+        Optional<GroupEntity> byId = groupRepository.findById(groupId);
+        if (!byId.isPresent()) {
+            throw new GroupDoesntExistException();
+        }
+        return byId.get();
     }
-
-
 }

@@ -1,16 +1,18 @@
 package pl.springExercises.users.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import pl.springExercises.users.dto.UserDto;
 import pl.springExercises.users.entity.GroupEntity;
 import pl.springExercises.users.entity.UserEntity;
+import pl.springExercises.users.exception.GroupDoesntExistException;
+import pl.springExercises.users.exception.UserDoesntExistException;
 import pl.springExercises.users.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /*
     Różnica pomiędzy
@@ -84,20 +86,25 @@ public class UserService {
     }
 
     public void rmUser(Long userId) {
-        userRepository.deleteById(userId);
+        try {
+            userRepository.deleteById(userId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UserDoesntExistException();
+        }
     }
 
 
     public void attachGroup(Long userId, Long groupId) {
         Optional<UserEntity> optionalUser = userRepository.findById(userId); //opakowanie dla danych w bazie,
         if (optionalUser.isPresent()) {
-            Optional<GroupEntity> optionalGroup = groupService.getGroupById(groupId);
-            if (optionalGroup.isPresent()) {
+            GroupEntity groupEntity = groupService.getGroupById(groupId);
                 UserEntity user = optionalUser.get();
-                user.setGroupEntity(optionalGroup.get());
+                user.setGroupEntity(groupEntity);
                 userRepository.save(user);
-            }
+        } else {
+            throw new UserDoesntExistException();
         }
+
     }
 
 }
