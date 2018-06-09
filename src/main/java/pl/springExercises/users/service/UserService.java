@@ -6,6 +6,10 @@ import pl.springExercises.users.dto.UserDto;
 import pl.springExercises.users.entity.UserEntity;
 import pl.springExercises.users.repository.UserRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /*
     Różnica pomiędzy
     @Component jest tym samym co @Service.
@@ -27,19 +31,44 @@ public class UserService {
     }
 
     public UserDto createUser (UserDto userDto){
+        UserEntity user = convertUserToEntity(userDto);
+        UserEntity savedUser = userRepository.save(user); //wrzucenie usera do bazy, wraz ze zwrotką encji z bazy.
+        UserDto savedUserDto = convertUserToDTO(savedUser);
+        return savedUserDto;
+    }
+
+    public List<UserDto> getAllUsers(){
+        List<UserEntity> all = userRepository.findAll();
+        List<UserDto> result = new ArrayList<>();
+
+        for (UserEntity user : all) {
+            result.add(convertUserToDTO(user));
+        }
+
+        List<UserDto> result2 = all.stream().map(this::convertUserToDTO).collect(Collectors.toList());
+
+
+        return result;
+    }
+
+    private UserEntity convertUserToEntity(UserDto userDto){
         UserEntity user = new UserEntity();
+        user.setId(userDto.getId());
         user.setName(userDto.getName());
         user.setSurname(userDto.getSurname());
         user.setEmail(userDto.getEmail());
-
-        UserEntity savedUser = userRepository.save(user); //wrzucenie usera do bazy, wraz ze zwrotką encji z bazy.
-
-        UserDto savedUserDto = new UserDto();
-        savedUserDto.setEmail(savedUser.getEmail());
-        savedUserDto.setId(savedUser.getId());
-        savedUserDto.setName(savedUser.getName());
-        savedUserDto.setSurname(savedUser.getSurname());
-
-        return savedUserDto;
+        return user;
     }
+        private UserDto convertUserToDTO(UserEntity userEntity){
+        UserDto user = new UserDto();
+            user.setId(userEntity.getId());
+
+            user.setName(userEntity.getName());
+            user.setSurname(userEntity.getSurname());
+        user.setEmail(userEntity.getEmail());
+        return user;
+    }
+
+
+
 }
