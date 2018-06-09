@@ -30,6 +30,7 @@ public class UserController {
 
     @PutMapping(value = "/{userId}")
     public void updateUser(@RequestBody UserDto userDto, @PathVariable Long userId){
-        System.out.println(userDto + " " + userId);
+       userDto.setId(userId);
+       userService.updateUser(userDto);
     }
 }

@@ -30,14 +30,14 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserDto createUser (UserDto userDto){
+    public UserDto createUser(UserDto userDto) {
         UserEntity user = convertUserToEntity(userDto);
         UserEntity savedUser = userRepository.save(user); //wrzucenie usera do bazy, wraz ze zwrotką encji z bazy.
         UserDto savedUserDto = convertUserToDTO(savedUser);
         return savedUserDto;
     }
 
-    public List<UserDto> getAllUsers(){
+    public List<UserDto> getAllUsers() {
         List<UserEntity> all = userRepository.findAll();
         List<UserDto> result = new ArrayList<>();
 
@@ -51,7 +51,7 @@ public class UserService {
         return result;
     }
 
-    private UserEntity convertUserToEntity(UserDto userDto){
+    private UserEntity convertUserToEntity(UserDto userDto) { //z wyswietlenia do bazy
         UserEntity user = new UserEntity();
         user.setId(userDto.getId());
         user.setName(userDto.getName());
@@ -59,16 +59,26 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         return user;
     }
-        private UserDto convertUserToDTO(UserEntity userEntity){
-        UserDto user = new UserDto();
-            user.setId(userEntity.getId());
 
-            user.setName(userEntity.getName());
-            user.setSurname(userEntity.getSurname());
+    private UserDto convertUserToDTO(UserEntity userEntity) { //z bazy do wyswietlenia
+        UserDto user = new UserDto();
+        user.setId(userEntity.getId());
+
+        user.setName(userEntity.getName());
+        user.setSurname(userEntity.getSurname());
         user.setEmail(userEntity.getEmail());
         return user;
     }
 
+
+    public UserDto updateUser(UserDto userDto) {
+//        UserEntity user = convertUserToEntity(userDto);
+//        UserEntity savedUser = userRepository.save(user); //wrzucenie usera do bazy, wraz ze zwrotką encji z bazy.
+//        UserDto resultUser = convertUserToDTO(savedUser);
+// return result;
+
+        return createUser(userDto);
+    }
 
 
 }
