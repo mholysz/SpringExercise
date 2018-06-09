@@ -40,4 +40,9 @@ public class UserController {
         userService.rmUser(userId);
     }
 
+
+    @PutMapping(value = "/{userId}/group/{groupId}")
+    public void attachGroup(@PathVariable Long userId, @PathVariable Long groupId){
+       userService.attachGroup(userId, groupId);
+    }
 }

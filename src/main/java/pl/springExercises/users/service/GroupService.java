@@ -10,6 +10,7 @@ import pl.springExercises.users.repository.GroupRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GroupService {
@@ -60,6 +61,10 @@ public class GroupService {
 
     public void rmGroup(Long groupId) {
         groupRepository.deleteById(groupId);
+    }
+
+    public Optional<GroupEntity> getGroupById(Long groupId){
+        return groupRepository.findById(groupId);
     }
 
 

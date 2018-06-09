@@ -3,11 +3,13 @@ package pl.springExercises.users.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.springExercises.users.dto.UserDto;
+import pl.springExercises.users.entity.GroupEntity;
 import pl.springExercises.users.entity.UserEntity;
 import pl.springExercises.users.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /*
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final GroupService groupService;
 
     /*
     Autowired wpisywany przy polu korzysta z refleksji, która jest wolniejsza.
@@ -26,8 +29,9 @@ public class UserService {
      */
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, GroupService groupService) {
         this.userRepository = userRepository;
+        this.groupService = groupService;
     }
 
     public UserDto createUser(UserDto userDto) {
@@ -44,10 +48,7 @@ public class UserService {
         for (UserEntity user : all) {
             result.add(convertUserToDTO(user));
         }
-
-        List<UserDto> result2 = all.stream().map(this::convertUserToDTO).collect(Collectors.toList());
-
-
+//        List<UserDto> result2 = all.stream().map(this::convertUserToDTO).collect(Collectors.toList());
         return result;
     }
 
@@ -63,10 +64,12 @@ public class UserService {
     private UserDto convertUserToDTO(UserEntity userEntity) { //z bazy do wyswietlenia
         UserDto user = new UserDto();
         user.setId(userEntity.getId());
-
         user.setName(userEntity.getName());
         user.setSurname(userEntity.getSurname());
         user.setEmail(userEntity.getEmail());
+        if (userEntity.getGroupEntity() != null) {
+            user.setGroup(userEntity.getGroupEntity().getName());
+        }
         return user;
     }
 
@@ -80,9 +83,21 @@ public class UserService {
         return createUser(userDto);
     }
 
-    public void rmUser(Long userId){
-    userRepository.deleteById(userId);
+    public void rmUser(Long userId) {
+        userRepository.deleteById(userId);
     }
 
+
+    public void attachGroup(Long userId, Long groupId) {
+        Optional<UserEntity> optionalUser = userRepository.findById(userId); //opakowanie dla danych w bazie,
+        if (optionalUser.isPresent()) {
+            Optional<GroupEntity> optionalGroup = groupService.getGroupById(groupId);
+            if (optionalGroup.isPresent()) {
+                UserEntity user = optionalUser.get();
+                user.setGroupEntity(optionalGroup.get());
+                userRepository.save(user);
+            }
+        }
+    }
 
 }
