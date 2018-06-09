@@ -33,4 +33,10 @@ public class UserController {
        userDto.setId(userId);
        userService.updateUser(userDto);
     }
+
+    @DeleteMapping(value = "/{userId}")
+    public void rmUser(@PathVariable Long userId){
+        userService.rmUser(userId);
+    }
+
 }

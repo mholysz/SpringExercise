@@ -80,5 +80,9 @@ public class UserService {
         return createUser(userDto);
     }
 
+    public void rmUser(Long userId){
+    userRepository.deleteById(userId);
+    }
+
 
 }
