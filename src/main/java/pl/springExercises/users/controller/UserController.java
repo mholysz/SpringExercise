@@ -8,6 +8,7 @@ import pl.springExercises.users.service.UserService;
 import java.util.List;
 
 @RestController
+@RequestMapping(value = "/user")
 public class UserController {
     private final UserService userService;
 
