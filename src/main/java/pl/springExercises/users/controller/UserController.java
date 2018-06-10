@@ -2,6 +2,7 @@ package pl.springExercises.users.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import pl.springExercises.users.dto.NewUserDto;
 import pl.springExercises.users.dto.UserDto;
 import pl.springExercises.users.service.UserService;
 
@@ -18,9 +19,9 @@ public class UserController {
     }
 
     @PostMapping //PostMapping - zapytanie HTTP jako POST
-    public void createUser(@RequestBody UserDto userDto) {
+    public void createUser(@RequestBody NewUserDto newUserDto) {
         //@RequestBody - wyciąga parametry z zapytania POST
-        userService.createUser(userDto);
+        userService.createUser(newUserDto);
     }
 
     @GetMapping
@@ -30,9 +31,9 @@ public class UserController {
 
 
     @PutMapping(value = "/{userId}")
-    public void updateUser(@RequestBody UserDto userDto, @PathVariable Long userId){
-       userDto.setId(userId);
-       userService.updateUser(userDto);
+    public void updateUser(@RequestBody NewUserDto newUserDto, @PathVariable Long userId){
+       newUserDto.setId(userId);
+       userService.updateUser(newUserDto);
     }
 
     @DeleteMapping(value = "/{userId}")
