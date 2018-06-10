@@ -1,7 +1,9 @@
 package pl.springExercises.users.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.springExercises.users.dto.UserDto;
 import pl.springExercises.users.dto.NewUserDto;
@@ -24,18 +26,17 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final GroupService groupService;
-    private final PasswordEncryptionService passwordEncryptionService;
-
+    private final PasswordEncoder passwordEncoder;
     /*
     Autowired wpisywany przy polu korzysta z refleksji, która jest wolniejsza.
     Lepiej wrzucić @Autowired na konstruktor wtedy wszystkie parametry sobie tworzymy szybciej
      */
 
     @Autowired
-    public UserService(UserRepository userRepository, GroupService groupService, PasswordEncryptionService passwordEncryptionService) {
+    public UserService(UserRepository userRepository, GroupService groupService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.groupService = groupService;
-        this.passwordEncryptionService = passwordEncryptionService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserDto createUser(NewUserDto newUserDto) {
@@ -43,6 +44,10 @@ public class UserService {
         UserEntity savedUser = userRepository.save(user); //wrzucenie usera do bazy, wraz ze zwrotką encji z bazy.
         UserDto savedUserDto = convertUserToDTO(savedUser);
         return savedUserDto;
+    }
+
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.findOneByEmail(email);
     }
 
     public List<UserDto> getAllUsers() {
@@ -71,7 +76,7 @@ public class UserService {
         userEntity.setName(newUserDto.getName());
         userEntity.setSurname(newUserDto.getSurname());
         userEntity.setEmail(newUserDto.getEmail());
-        userEntity.setPassword(passwordEncryptionService.encodePassword(newUserDto.getPassword()));
+        userEntity.setPassword(passwordEncoder.encode(newUserDto.getPassword()));
         return userEntity;
     }
 
@@ -117,9 +122,12 @@ public class UserService {
         }
     }
 
-    public UserEntity getUserByEmail(String email){
-        return userRepository.findOneByEmail(email);
+    public UserDto getUser(String email){
+        UserEntity user = userRepository.findOneByEmail(email);
+        return convertUserToDTO(user);
     }
+
+
 
 
 }

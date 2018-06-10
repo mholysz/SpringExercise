@@ -6,6 +6,7 @@ import pl.springExercises.users.dto.NewUserDto;
 import pl.springExercises.users.dto.UserDto;
 import pl.springExercises.users.service.UserService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -27,6 +28,12 @@ public class UserController {
     @GetMapping
     public List<UserDto> getAllUsers(){
         return userService.getAllUsers();
+    }
+
+
+    @GetMapping("/me")
+    public UserDto getCurrectUser(Principal principal) {
+        return userService.getUser(principal.getName());
     }
 
 
