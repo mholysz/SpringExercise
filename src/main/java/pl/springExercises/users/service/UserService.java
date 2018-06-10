@@ -115,7 +115,11 @@ public class UserService {
         } else {
             throw new UserDoesntExistException();
         }
-
     }
+
+    public UserEntity getUserByEmail(String email){
+        return userRepository.findOneByEmail(email);
+    }
+
 
 }
