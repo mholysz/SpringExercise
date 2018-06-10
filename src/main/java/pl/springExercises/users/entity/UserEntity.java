@@ -19,6 +19,7 @@ public class UserEntity {
     private String name;
     private String surname;
     private String email;
+    private String password;
     @ManyToOne
     private GroupEntity groupEntity;
 
